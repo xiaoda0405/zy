@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>小妲の主页</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "ZCOOL KuaiLe", "Noto Serif SC", sans-serif;
+      background: #0a0610 url("https://i.postimg.cc/054htHPP/IMG-20260930-144918.png") no-repeat center center fixed;
+      background-size: cover;
+      color: #f0e0ff;
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(8,4,16,0.75) 0%, rgba(12,6,22,0.82) 50%, rgba(10,5,18,0.88) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(140,60,220,0.15), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(180,80,255,0.1), transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    a { color: #d4b0ff; text-decoration: none; transition: color 0.3s; }
+    a:hover { color: #f0c8ff; }
+
+    #mainSite { position: relative; z-index: 1; }
+
+    .archive-btn {
+      position: fixed;
+      top: 16px; left: 16px;
+      z-index: 100;
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 16px;
+      background: rgba(30,15,55,0.88);
+      border: 1px solid rgba(180,120,255,0.4);
+      border-radius: 50px;
+      color: #e0c0ff;
+      font-family: "ZCOOL KuaiLe", cursive;
+      font-size: 0.9rem;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 18px rgba(80,30,150,0.35);
+      transition: all 0.3s;
+    }
+    .archive-btn:hover {
+      background: rgba(50,25,90,0.92);
+      border-color: rgba(210,150,255,0.7);
+      transform: translateY(-2px);
+    }
+    .archive-btn .avatar-mini {
+      width: 26px; height: 26px; border-radius: 50%;
+      object-fit: cover; border: 1px solid rgba(200,150,255,0.5);
+    }
+
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(5,2,12,0.78);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: none; align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.show { display: flex; }
+
+    .modal {
+      background: rgba(22,12,42,0.96);
+      border: 1px solid rgba(170,110,240,0.4);
+      border-radius: 20px;
+      width: 100%; max-width: 400px;
+      padding: 28px 24px;
+      box-shadow: 0 20px 50px rgba(60,20,120,0.5);
+      position: relative;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-close {
+      position: absolute; top: 12px; right: 16px;
+      background: none; border: none; color: #a080c8;
+      font-size: 1.4rem; cursor: pointer; line-height: 1;
+    }
+    .modal-close:hover { color: #f0c8ff; }
+    .modal h2 { text-align: center; color: #f0d0ff; font-size: 1.4rem; margin-bottom: 4px; letter-spacing: 2px; }
+    .modal .sub { text-align: center; color: #a080c8; font-size: 0.88rem; margin-bottom: 20px; }
+
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .tab {
+      flex: 1; padding: 9px; text-align: center; border-radius: 12px;
+      background: rgba(40,20,70,0.5); border: 1px solid rgba(140,90,200,0.25);
+      color: #b090d0; font-family: "ZCOOL KuaiLe", cursive; font-size: 0.92rem;
+      cursor: pointer; transition: all 0.25s;
+    }
+    .tab.active {
+      background: linear-gradient(135deg, #7c3aed, #5b21b6);
+      border-color: transparent; color: #fff;
+      box-shadow: 0 4px 14px rgba(100,40,180,0.4);
+    }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; color: #c8b0e0; font-size: 0.88rem; margin-bottom: 6px; }
+    .form-group input[type="text"],
+    .form-group input[type="password"],
+    .form-group input[type="file"] {
+      width: 100%; padding: 11px 14px;
+      background: rgba(15,8,30,0.7);
+      border: 1px solid rgba(150,100,220,0.35);
+      border-radius: 12px; color: #f0e0ff;
+      font-family: "ZCOOL KuaiLe", cursive; font-size: 0.95rem; outline: none;
+    }
+    .form-group input:focus { border-color: rgba(200,140,255,0.7); }
+    .form-group input[type="file"] { padding: 9px; font-size: 0.82rem; }
+
+    .avatar-preview {
+      width: 72px; height: 72px; border-radius: 50%; object-fit: cover;
+      border: 2px solid rgba(190,140,255,0.5); margin: 8px auto 0; display: none;
+    }
+    .avatar-preview.show { display: block; }
+
+    .form-hint { font-size: 0.78rem; color: #8070a0; margin-top: 5px; }
+    .form-error { color: #ff8a8a; font-size: 0.85rem; margin-top: 8px; text-align: center; display: none; }
+    .form-error.show { display: block; }
+    .form-success { color: #a0e8b0; font-size: 0.85rem; margin-top: 8px; text-align: center; display: none; }
+    .form-success.show { display: block; }
+
+    .btn-primary {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, #7c3aed, #5b21b6);
+      color: #fff; border: none; border-radius: 50px;
+      font-family: "ZCOOL KuaiLe", cursive; font-size: 1rem;
+      cursor: pointer; margin-top: 6px;
+      box-shadow: 0 4px 18px rgba(100,40,180,0.4);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,58,237,0.55); }
+    .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      text-align: center; padding: 50px 20px 70px; position: relative;
+    }
+    .avatar-wrap { margin-bottom: 22px; }
+    .avatar {
+      width: 130px; height: 130px; border-radius: 50%; overflow: hidden;
+      border: 3px solid rgba(210,160,255,0.7);
+      box-shadow: 0 0 0 5px rgba(120,50,200,0.15), 0 0 36px rgba(160,80,255,0.45);
+      transition: transform 0.4s;
+    }
+    .avatar:hover { transform: scale(1.04); }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .hero h1 {
+      font-size: clamp(2.1rem, 8vw, 3.2rem); color: #f0d4ff;
+      text-shadow: 0 0 20px rgba(200,120,255,0.7), 0 0 50px rgba(140,60,220,0.4);
+      letter-spacing: 4px; margin-bottom: 12px; font-weight: 400;
+    }
+    .tagline { font-size: 1.15rem; color: #e0b8ff; margin-bottom: 6px; letter-spacing: 2px; opacity: 0; animation: fadeIn 1s 0.3s forwards; }
+    .handle { font-size: 0.9rem; color: #b090d8; margin-bottom: 16px; letter-spacing: 1px; opacity: 0; animation: fadeIn 1s 0.5s forwards; }
+    .keywords { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 14px; margin-bottom: 32px; opacity: 0; animation: fadeIn 1s 0.7s forwards; }
+    .keywords span {
+      font-size: 0.88rem; color: #c4a0e8; padding: 4px 12px;
+      border: 1px solid rgba(180,120,255,0.35); border-radius: 20px; background: rgba(40,20,70,0.4);
+    }
+    .scroll-hint {
+      position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+      font-size: 1.6rem; color: #a080d0; animation: bounce 2.4s infinite;
+      text-shadow: 0 0 14px rgba(160,100,255,0.5);
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.6; }
+      50% { transform: translateX(-50%) translateY(8px); opacity: 1; }
+    }
+
+    section { max-width: 780px; margin: 0 auto; padding: 56px 20px; position: relative; z-index: 1; }
+    section h2 {
+      font-size: 1.7rem; color: #f0d0ff; text-align: center; margin-bottom: 8px;
+      letter-spacing: 3px; text-shadow: 0 0 20px rgba(180,100,255,0.45);
+    }
+    .section-desc { text-align: center; color: #a890c8; margin-bottom: 28px; font-size: 0.95rem; }
+
+    .card {
+      background: rgba(22,12,40,0.82); border: 1px solid rgba(160,100,230,0.28);
+      border-radius: 18px; padding: 26px 22px; margin-bottom: 22px;
+      box-shadow: 0 8px 28px rgba(60,20,120,0.25); backdrop-filter: blur(8px);
+      transition: transform 0.35s, border-color 0.35s; opacity: 0; transform: translateY(24px);
+    }
+    .card.visible { opacity: 1; transform: translateY(0); }
+    .card:hover { transform: translateY(-5px); border-color: rgba(200,140,255,0.5); }
+    .card h3 { color: #e8c0ff; font-size: 1.25rem; margin-bottom: 10px; }
+    .card p { color: #c8b0e0; font-size: 0.98rem; margin-bottom: 10px; }
+    .card .tags { font-size: 0.85rem; color: #a078d0; margin-top: 8px; }
+
+    .btn {
+      display: inline-block; padding: 12px 30px;
+      background: linear-gradient(135deg, #7c3aed, #5b21b6);
+      color: #fff; border: none; border-radius: 50px;
+      font-family: "ZCOOL KuaiLe", cursive; font-size: 1rem;
+      cursor: pointer; transition: transform 0.25s, box-shadow 0.25s;
+      box-shadow: 0 4px 18px rgba(100,40,180,0.4);
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(124,58,237,0.55); }
+
+    .qr-wrap { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; margin: 18px 0 6px; }
+    .qr-item { text-align: center; }
+    .qr-item p { margin-bottom: 10px; color: #d0b0ff; font-size: 0.95rem; }
+    .qr-item img {
+      width: 150px; height: 150px; object-fit: contain; border-radius: 12px;
+      border: 2px solid rgba(190,140,255,0.5); background: #fff;
+      box-shadow: 0 6px 22px rgba(80,30,150,0.3);
+    }
+
+    .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .game-card {
+      background: rgba(22,12,40,0.85); border: 1px solid rgba(160,100,230,0.28);
+      border-radius: 16px; padding: 22px 16px; text-align: center;
+      transition: transform 0.35s, border-color 0.35s; opacity: 0; transform: translateY(20px);
+    }
+    .game-card.visible { opacity: 1; transform: translateY(0); }
+    .game-card:hover { transform: translateY(-6px); border-color: rgba(210,150,255,0.55); }
+    .game-card h3 { color: #e4b8ff; font-size: 1.05rem; margin-bottom: 16px; line-height: 1.4; }
+    .game-card .btn { width: 100%; max-width: 140px; padding: 11px 16px; font-size: 0.95rem; }
+
+    footer {
+      text-align: center; padding: 40px 20px 50px; color: #6b5a88; font-size: 0.88rem;
+      border-top: 1px solid rgba(140,90,200,0.15); position: relative; z-index: 1;
+    }
+    footer .handle { color: #a080c8; font-size: 0.92rem; }
+
+    /* ========== 贡奴专属页 ========== */
+    #dashboard {
+      display: none;
+      position: fixed; inset: 0;
+      z-index: 150;
+      background: #0a0610 url("https://i.postimg.cc/054htHPP/IMG-20260930-144918.png") no-repeat center center fixed;
+      background-size: cover;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    #dashboard::before {
+      content: "";
+      position: fixed; inset: 0;
+      background: linear-gradient(180deg, rgba(6,3,14,0.84) 0%, rgba(10,5,20,0.9) 100%);
+      pointer-events: none; z-index: 0;
+    }
+    #dashboard.show { display: block; }
+
+    .dash-inner {
+      position: relative; z-index: 1;
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 14px 16px 36px;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 顶栏：只保留返回、下载存档、退出 */
+    .dash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .dash-header-right {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .dash-back, .dash-logout, .dash-save {
+      padding: 7px 14px;
+      background: rgba(40,20,70,0.8);
+      border: 1px solid rgba(160,110,220,0.4);
+      border-radius: 50px;
+      color: #d0b0ff;
+      font-family: "ZCOOL KuaiLe", cursive;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.25s;
+      white-space: nowrap;
+    }
+    .dash-back:hover, .dash-logout:hover, .dash-save:hover {
+      background: rgba(80,40,140,0.55);
+      border-color: rgba(200,150,255,0.6);
+    }
+    .dash-save {
+      background: rgba(60,30,100,0.85);
+      border-color: rgba(180,120,255,0.5);
+    }
+
+    .exp-bar-wrap { margin: 0 0 10px; }
+    .exp-bar-label {
+      display: flex; justify-content: space-between;
+      font-size: 0.78rem; color: #a080c8; margin-bottom: 4px;
+    }
+    .exp-bar {
+      height: 8px;
+      background: rgba(30,15,55,0.85);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(140,90,200,0.3);
+    }
+    .exp-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #7c3aed, #c084fc);
+      border-radius: 8px;
+      transition: width 0.45s ease;
+      box-shadow: 0 0 10px rgba(160,80,255,0.45);
+    }
+
+    .char-area {
+      text-align: center;
+      margin-bottom: 6px;
+      flex-shrink: 0;
+    }
+    .char-name-level { margin-bottom: 4px; }
+    .char-name-level .cname {
+      font-size: 1.2rem;
+      color: #f5e0ff;
+      text-shadow: 0 0 16px rgba(220,140,255,0.55);
+      letter-spacing: 2px;
+    }
+    .char-name-level .clevel {
+      font-size: 0.88rem;
+      color: #d4b0ff;
+      margin-top: 1px;
+    }
+
+    .char-sprite-wrap {
+      display: inline-block;
+      width: 220px;
+      height: 280px;
+      overflow: hidden;
+      margin: 0 auto;
+      filter: drop-shadow(0 0 18px rgba(160,80,255,0.5));
+      position: relative;
+    }
+    .char-sprite {
+      width: 161.57px;
+      height: 780px;
+      background-image: url("https://i.postimg.cc/vZ1QD6XH/Picsart-26-09-30-21-32-55-318.png");
+      background-repeat: no-repeat;
+      background-size: 1131px 780px;
+      background-position: -969.42px 0;
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      transform: translateX(-50%) scale(0.48);
+      transform-origin: top center;
+    }
+    .char-sprite.playing {
+      animation: ketouPlay 0.95s steps(7) forwards;
+    }
+    @keyframes ketouPlay {
+      from { background-position: 0 0; }
+      to   { background-position: -1131px 0; }
+    }
+
+    .ketou-progress {
+      text-align: center;
+      color: #b090d0;
+      font-size: 0.88rem;
+      margin: 4px 0 8px;
+      letter-spacing: 0.5px;
+    }
+    .ketou-progress strong { color: #e8c0ff; }
+
+    .status-tips {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #9080b0;
+      margin-bottom: 12px;
+      line-height: 1.45;
+    }
+    .status-tips .ok { color: #a0e8b0; }
+    .status-tips .no { color: #c090b0; }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .ketou-btn, .qingAn-btn {
+      flex: 1;
+      padding: 13px 10px;
+      border: none;
+      border-radius: 50px;
+      font-family: "ZCOOL KuaiLe", cursive;
+      font-size: 1rem;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    }
+    .ketou-btn {
+      background: linear-gradient(135deg, #7c3aed, #5b21b6);
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(100,40,180,0.4);
+    }
+    .ketou-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 24px rgba(124,58,237,0.55);
+    }
+    .qingAn-btn {
+      background: linear-gradient(135deg, #9333ea, #6b21a8);
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(120,50,180,0.35);
+    }
+    .qingAn-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 24px rgba(140,60,200,0.5);
+    }
+    .ketou-btn:disabled, .qingAn-btn:disabled {
+      opacity: 0.48;
+      cursor: not-allowed;
+    }
+    .qingAn-btn.done, .ketou-btn.done {
+      background: rgba(50,35,80,0.65);
+      box-shadow: none;
+    }
+
+    .qingAn-box {
+      background: rgba(22,12,40,0.9);
+      border: 1px solid rgba(160,100,230,0.3);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+      display: none;
+    }
+    .qingAn-box.show { display: block; }
+    .qingAn-box textarea {
+      width: 100%;
+      min-height: 64px;
+      padding: 10px 12px;
+      background: rgba(15,8,30,0.7);
+      border: 1px solid rgba(150,100,220,0.35);
+      border-radius: 10px;
+      color: #f0e0ff;
+      font-family: "ZCOOL KuaiLe", cursive;
+      font-size: 0.92rem;
+      outline: none;
+      resize: vertical;
+      margin-bottom: 8px;
+    }
+    .qingAn-box textarea:focus { border-color: rgba(200,140,255,0.7); }
+    .qingAn-submit {
+      width: 100%;
+      padding: 11px;
+      background: linear-gradient(135deg, #7c3aed, #5b21b6);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-family: "ZCOOL KuaiLe", cursive;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .history-section {
+      margin-top: 4px;
+      flex: 1;
+      min-height: 0;
+    }
+    .history-title {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #d4b0ff;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    .history-list {
+      max-height: 180px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 2px;
+    }
+    .history-item {
+      background: rgba(22,12,40,0.82);
+      border: 1px solid rgba(140,90,200,0.22);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .history-item .h-date {
+      font-size: 0.72rem;
+      color: #8070a8;
+      margin-bottom: 3px;
+    }
+    .history-item .h-text {
+      font-size: 0.88rem;
+      color: #d8c0f0;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .history-empty {
+      text-align: center;
+      color: #6b5a88;
+      font-size: 0.85rem;
+      padding: 16px 0;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: rgba(40,20,80,0.96);
+      border: 1px solid rgba(180,120,255,0.5);
+      color: #f0d4ff;
+      padding: 12px 22px;
+      border-radius: 50px;
+      font-family: "ZCOOL KuaiLe", cursive;
+      font-size: 0.9rem;
+      z-index: 300;
+      opacity: 0;
+      transition: all 0.35s;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgba(80,30,150,0.4);
+      max-width: 88%;
+      text-align: center;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 380px) {
+      .char-sprite-wrap { width: 190px; height: 245px; }
+      .char-sprite { transform: translateX(-50%) scale(0.42); top: 4px; }
+      .dash-inner { padding: 12px 12px 32px; }
+      .action-row { gap: 8px; }
+      .ketou-btn, .qingAn-btn { font-size: 0.95rem; padding: 12px 8px; }
+      .dash-back, .dash-logout, .dash-save { padding: 6px 10px; font-size: 0.78rem; }
+    }
+
+    @media (min-width: 480px) {
+      .char-sprite-wrap { width: 240px; height: 300px; }
+      .char-sprite { transform: translateX(-50%) scale(0.52); }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="archive-btn" id="archiveBtn" type="button">
+    <span id="archiveBtnText">贡奴档案</span>
+  </button>
+
+  <div class="modal-overlay" id="authModal">
+    <div class="modal">
+      <button class="modal-close" id="modalClose" type="button">&times;</button>
+      <h2>贡奴档案</h2>
+      <p class="sub">建立档案 · 成为专属贡奴</p>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="register">注册</div>
+        <div class="tab" data-tab="login">登录</div>
+      </div>
+
+      <div class="panel active" id="panel-register">
+        <div class="form-group">
+          <label>头像</label>
+          <input type="file" id="regAvatar" accept="image/*">
+          <img class="avatar-preview" id="regAvatarPreview" alt="预览">
+        </div>
+        <div class="form-group">
+          <label>名字</label>
+          <input type="text" id="regName" placeholder="你的贡奴名" maxlength="20">
+        </div>
+        <div class="form-group">
+          <label>6位密码</label>
+          <input type="password" id="regPass" placeholder="请输入6位数字" maxlength="6" inputmode="numeric" pattern="[0-9]*">
+          <p class="form-hint">仅支持6位数字，请牢记并妥善保管档案包</p>
+        </div>
+        <div class="form-error" id="regError"></div>
+        <div class="form-success" id="regSuccess"></div>
+        <button class="btn-primary" id="regSubmit" type="button">注册并下载档案</button>
+      </div>
+
+      <div class="panel" id="panel-login">
+        <div class="form-group">
+          <label>上传档案包 (.zip)</label>
+          <input type="file" id="loginZip" accept=".zip,application/zip">
+        </div>
+        <div class="form-group">
+          <label>6位密码</label>
+          <input type="password" id="loginPass" placeholder="请输入6位数字" maxlength="6" inputmode="numeric" pattern="[0-9]*">
+        </div>
+        <div class="form-error" id="loginError"></div>
+        <div class="form-success" id="loginSuccess"></div>
+        <button class="btn-primary" id="loginSubmit" type="button">登录并进入档案</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mainSite">
+    <header class="hero">
+      <div class="avatar-wrap">
+        <div class="avatar">
+          <img src="https://i.postimg.cc/zvSpmNFt/IMG-20260723-211856.png" alt="小妲">
+        </div>
+      </div>
+      <h1>小妲</h1>
+      <p class="tagline">你生下来就是被榨干的命</p>
+      <p class="handle">@shorter_ja39843</p>
+      <div class="keywords">
+        <span>温柔黑心</span>
+        <span>身体支配</span>
+        <span>自动榨金</span>
+      </div>
+      <div class="scroll-hint">↓</div>
+    </header>
+
+    <section id="about">
+      <h2>关于我</h2>
+      <p class="section-desc">小妲 · @shorter_ja39843</p>
+      <div class="card">
+        <h3>温柔且黑心</h3>
+        <p>已经毕业，喜欢有趣的事情和有趣的人。<br>专注于制作问卷、小游戏，致力于自动榨金。</p>
+        <p class="tags">#黑心 &nbsp;#贡奴 &nbsp;#ATM奴 &nbsp;#上贡 &nbsp;#压榨</p>
+      </div>
+    </section>
+
+    <section id="tribute">
+      <h2>上贡须知</h2>
+      <p class="section-desc">想被清空？扫码上贡</p>
+      <div class="card">
+        <h3>上贡指南</h3>
+        <p>口令私信或者扫描下方二维码，即可向小妲上贡。</p>
+        <div class="qr-wrap">
+          <div class="qr-item">
+            <p>支付宝</p>
+            <img src="https://i.postimg.cc/SNh3sQBR/IMG-20260721-005325.jpg" alt="支付宝二维码">
+          </div>
+          <div class="qr-item">
+            <p>微信支付</p>
+            <img src="https://i.postimg.cc/ht4YLyP8/IMG-20260721-005339.png" alt="微信二维码">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="games">
+      <h2>自制小游戏 · 问卷</h2>
+      <p class="section-desc">点进去，就是自愿被榨的开始</p>
+      <div class="games-grid">
+        <div class="game-card">
+          <h3>小妲的上贡射精小游戏</h3>
+          <a href="https://xd-game20.vercel.app/" class="btn" target="_blank" rel="noopener">开始玩</a>
+        </div>
+        <div class="game-card">
+          <h3>小妲的贡奴边缘问卷</h3>
+          <a href="https://forms.gle/zFk7rseoQdyJEN4cA" class="btn" target="_blank" rel="noopener">开始玩</a>
+        </div>
+        <div class="game-card">
+          <h3>小妲的模拟取金银行问卷小游戏</h3>
+          <a href="https://forms.gle/GxASLFnx69NaUCak6" class="btn" target="_blank" rel="noopener">开始玩</a>
+        </div>
+        <div class="game-card">
+          <h3>小妲的模拟上贡射精问卷</h3>
+          <a href="https://forms.gle/TZyVm4QXKfVR6QJR6" class="btn" target="_blank" rel="noopener">开始玩</a>
+        </div>
+        <div class="game-card">
+          <h3>小妲的模拟上贡射精问卷2.0</h3>
+          <a href="https://forms.gle/yhGtZ6n9PyPmdgUn7" class="btn" target="_blank" rel="noopener">开始玩</a>
+        </div>
+        <div class="game-card">
+          <h3>小妲的胁迫小游戏</h3>
+          <a href="https://xd-xp-2-0.vercel.app/" class="btn" target="_blank" rel="noopener">开始玩</a>
+        </div>
+        <div class="game-card">
+          <h3>小妲的atm养成问卷</h3>
+          <a href="https://xd-wen.vercel.app/" class="btn" target="_blank" rel="noopener">开始玩</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p class="handle">小妲 · @shorter_ja39843</p>
+      <p style="margin-top:8px; font-size:0.82rem; color:#5a4a70;">仅供娱乐 · 请理性参与</p>
+    </footer>
+  </div>
+
+  <div id="dashboard">
+    <div class="dash-inner">
+      <div class="dash-header">
+        <button class="dash-back" id="dashBack" type="button">← 返回主页</button>
+        <div class="dash-header-right">
+          <button class="dash-save" id="dashSave" type="button">下载存档</button>
+          <button class="dash-logout" id="dashLogout" type="button">退出</button>
+        </div>
+      </div>
+
+      <div class="exp-bar-wrap">
+        <div class="exp-bar-label">
+          <span id="expLabel">经验</span>
+          <span id="expNum">0 / 10</span>
+        </div>
+        <div class="exp-bar">
+          <div class="exp-bar-fill" id="expFill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="char-area">
+        <div class="char-name-level">
+          <div class="cname" id="charName">—</div>
+          <div class="clevel" id="charLevel">等级 1</div>
+        </div>
+        <div class="char-sprite-wrap">
+          <div class="char-sprite" id="charSprite"></div>
+        </div>
+      </div>
+
+      <div class="ketou-progress" id="ketouProgress">
+        磕头进度：<strong>0</strong> / 100
+      </div>
+
+      <div class="status-tips" id="statusTips">
+        请安：<span class="no">未完成</span> · 磕头：<span class="no">未完成</span><br>
+        两项都完成才获得经验
+      </div>
+
+      <div class="action-row">
+        <button class="qingAn-btn" id="qingAnBtn" type="button">每日请安</button>
+        <button class="ketou-btn" id="ketouBtn" type="button">磕 头</button>
+      </div>
+
+      <div class="qingAn-box" id="qingAnBox">
+        <textarea id="qingAnText" placeholder="写下今日请安内容…" maxlength="200"></textarea>
+        <button class="qingAn-submit" id="qingAnSubmit" type="button">提交请安</button>
+      </div>
+
+      <div class="history-section">
+        <div class="history-title">历史请安</div>
+        <div class="history-list" id="historyList">
+          <div class="history-empty">暂无请安记录</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.card, .game-card').forEach(el => observer.observe(el));
+
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    function fileToDataURL(file) {
+      return new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+      });
+    }
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+    function todayStr() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2400);
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    const STORAGE_KEY = 'gongnu_profile';
+
+    function getUser() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { return null; }
+    }
+    function setUser(u) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
+      updateArchiveBtn();
+    }
+    function clearUser() {
+      localStorage.removeItem(STORAGE_KEY);
+      updateArchiveBtn();
+    }
+
+    function calcLevel(exp) {
+      return Math.min(10, Math.floor(exp / 10) + 1);
+    }
+    function expProgress(exp) {
+      if (calcLevel(exp) >= 10) return { current: 10, need: 10, pct: 100 };
+      const current = exp % 10;
+      return { current, need: 10, pct: (current / 10) * 100 };
+    }
+    function needKowtow(level) {
+      return level * 100;
+    }
+
+    function updateArchiveBtn() {
+      const user = getUser();
+      const btn = document.getElementById('archiveBtn');
+      if (user) {
+        btn.innerHTML = '';
+        if (user.avatar) {
+          const img = document.createElement('img');
+          img.src = user.avatar; img.className = 'avatar-mini'; img.alt = '';
+          btn.appendChild(img);
+        }
+        const span = document.createElement('span');
+        span.id = 'archiveBtnText';
+        span.textContent = user.name;
+        btn.appendChild(span);
+      } else {
+        btn.innerHTML = '<span id="archiveBtnText">贡奴档案</span>';
+      }
+    }
+
+    const modal = document.getElementById('authModal');
+    const tabs = document.querySelectorAll('.tab');
+    const panels = {
+      register: document.getElementById('panel-register'),
+      login: document.getElementById('panel-login')
+    };
+
+    function openModal() {
+      const user = getUser();
+      if (user) {
+        closeModal();
+        openDashboard();
+        return;
+      }
+      showTab('register');
+      modal.classList.add('show');
+    }
+    function closeModal() {
+      modal.classList.remove('show');
+      document.querySelectorAll('.form-error, .form-success').forEach(el => {
+        el.classList.remove('show'); el.textContent = '';
+      });
+    }
+    function showTab(name) {
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+      Object.keys(panels).forEach(k => panels[k].classList.toggle('active', k === name));
+    }
+
+    document.getElementById('archiveBtn').addEventListener('click', openModal);
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+    tabs.forEach(tab => tab.addEventListener('click', () => showTab(tab.dataset.tab)));
+
+    document.getElementById('regAvatar').addEventListener('change', async e => {
+      const file = e.target.files[0];
+      const preview = document.getElementById('regAvatarPreview');
+      if (file && file.type.startsWith('image/')) {
+        preview.src = await fileToDataURL(file);
+        preview.classList.add('show');
+      } else preview.classList.remove('show');
+    });
+
+    async function buildZip(profile) {
+      const zip = new JSZip();
+      const extMatch = (profile.avatar || '').match(/^data:image\/(\w+);/);
+      const ext = (extMatch ? extMatch[1] : 'png').replace('jpeg', 'jpg');
+
+      zip.file('profile.json', JSON.stringify({
+        name: profile.name,
+        passwordHash: profile.passwordHash,
+        createdAt: profile.createdAt,
+        version: profile.version || 3,
+        exp: profile.exp || 0,
+        kowtowCount: profile.kowtowCount || 0,
+        lastDate: profile.lastDate || todayStr(),
+        qingAnDone: profile.qingAnDone || false,
+        qingAnHistory: profile.qingAnHistory || [],
+        avatarExt: ext
+      }, null, 2));
+
+      if (profile.avatar && profile.avatar.includes(',')) {
+        const b64 = profile.avatar.split(',')[1];
+        const binary = atob(b64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        zip.file('avatar.' + ext, bytes);
+      }
+      return zip.generateAsync({ type: 'blob' });
+    }
+
+    document.getElementById('regSubmit').addEventListener('click', async () => {
+      const name = document.getElementById('regName').value.trim();
+      const pass = document.getElementById('regPass').value.trim();
+      const avatarFile = document.getElementById('regAvatar').files[0];
+      const errEl = document.getElementById('regError');
+      const okEl = document.getElementById('regSuccess');
+      errEl.classList.remove('show'); okEl.classList.remove('show');
+
+      if (!avatarFile) { errEl.textContent = '请上传头像'; errEl.classList.add('show'); return; }
+      if (!name) { errEl.textContent = '请输入名字'; errEl.classList.add('show'); return; }
+      if (!/^\d{6}$/.test(pass)) { errEl.textContent = '密码必须是6位数字'; errEl.classList.add('show'); return; }
+
+      const btn = document.getElementById('regSubmit');
+      btn.disabled = true; btn.textContent = '生成中...';
+
+      try {
+        const avatarDataURL = await fileToDataURL(avatarFile);
+        const passwordHash = await sha256(pass);
+        const profile = {
+          name,
+          passwordHash,
+          avatar: avatarDataURL,
+          createdAt: new Date().toISOString(),
+          version: 3,
+          exp: 0,
+          kowtowCount: 0,
+          lastDate: todayStr(),
+          qingAnDone: false,
+          qingAnHistory: []
+        };
+
+        const blob = await buildZip(profile);
+        downloadBlob(blob, `贡奴档案_${name}.zip`);
+        setUser(profile);
+
+        okEl.textContent = '注册成功！档案已下载，即将进入...';
+        okEl.classList.add('show');
+
+        setTimeout(() => {
+          closeModal();
+          openDashboard();
+        }, 900);
+      } catch (e) {
+        errEl.textContent = '生成失败：' + (e.message || '未知错误');
+        errEl.classList.add('show');
+      } finally {
+        btn.disabled = false; btn.textContent = '注册并下载档案';
+      }
+    });
+
+    document.getElementById('loginSubmit').addEventListener('click', async () => {
+      const zipFile = document.getElementById('loginZip').files[0];
+      const pass = document.getElementById('loginPass').value.trim();
+      const errEl = document.getElementById('loginError');
+      const okEl = document.getElementById('loginSuccess');
+      errEl.classList.remove('show'); okEl.classList.remove('show');
+
+      if (!zipFile) { errEl.textContent = '请上传档案包 (.zip)'; errEl.classList.add('show'); return; }
+      if (!/^\d{6}$/.test(pass)) { errEl.textContent = '密码必须是6位数字'; errEl.classList.add('show'); return; }
+
+      const btn = document.getElementById('loginSubmit');
+      btn.disabled = true; btn.textContent = '验证中...';
+
+      try {
+        const zip = await JSZip.loadAsync(zipFile);
+        const profileFile = zip.file('profile.json');
+        if (!profileFile) throw new Error('无效档案包');
+
+        const meta = JSON.parse(await profileFile.async('string'));
+        const hash = await sha256(pass);
+        if (hash !== meta.passwordHash) throw new Error('密码错误');
+
+        let avatarDataURL = '';
+        const ext = meta.avatarExt || 'png';
+        let avatarEntry = zip.file('avatar.' + ext);
+        if (!avatarEntry) {
+          const found = zip.file(/avatar\./);
+          if (found && found[0]) avatarEntry = found[0];
+        }
+        if (avatarEntry) {
+          const b64 = await avatarEntry.async('base64');
+          const mime = (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg' : 'image/png';
+          avatarDataURL = `data:${mime};base64,${b64}`;
+        }
+
+        const today = todayStr();
+        let kowtowCount = meta.kowtowCount || 0;
+        let qingAnDone = meta.qingAnDone || false;
+        if (meta.lastDate && meta.lastDate !== today) {
+          kowtowCount = 0;
+          qingAnDone = false;
+        }
+
+        const profile = {
+          name: meta.name,
+          passwordHash: meta.passwordHash,
+          avatar: avatarDataURL,
+          createdAt: meta.createdAt,
+          version: meta.version || 3,
+          exp: meta.exp || 0,
+          kowtowCount,
+          lastDate: today,
+          qingAnDone,
+          qingAnHistory: meta.qingAnHistory || []
+        };
+
+        setUser(profile);
+        okEl.textContent = '登录成功！欢迎回来';
+        okEl.classList.add('show');
+
+        setTimeout(() => {
+          closeModal();
+          openDashboard();
+        }, 700);
+      } catch (e) {
+        errEl.textContent = e.message || '登录失败';
+        errEl.classList.add('show');
+      } finally {
+        btn.disabled = false; btn.textContent = '登录并进入档案';
+      }
+    });
+
+    function openDashboard() {
+      const user = getUser();
+      if (!user) return;
+
+      const today = todayStr();
+      if (user.lastDate !== today) {
+        user.kowtowCount = 0;
+        user.qingAnDone = false;
+        user.lastDate = today;
+        setUser(user);
+      }
+
+      document.getElementById('mainSite').style.display = 'none';
+      document.getElementById('archiveBtn').style.display = 'none';
+      document.getElementById('dashboard').classList.add('show');
+      renderDashboard(user);
+    }
+
+    function closeDashboard() {
+      document.getElementById('dashboard').classList.remove('show');
+      document.getElementById('mainSite').style.display = '';
+      document.getElementById('archiveBtn').style.display = '';
+      document.getElementById('qingAnBox').classList.remove('show');
+    }
+
+    function tryGainExp(user) {
+      const level = calcLevel(user.exp || 0);
+      if (level >= 10) return false;
+      const need = needKowtow(level);
+      if (user.qingAnDone && (user.kowtowCount || 0) >= need) {
+        user.exp = (user.exp || 0) + 1;
+        user.kowtowCount = 0;
+        return true;
+      }
+      return false;
+    }
+
+    function renderDashboard(user) {
+      const level = calcLevel(user.exp || 0);
+      const prog = expProgress(user.exp || 0);
+      const need = needKowtow(level);
+      const count = user.kowtowCount || 0;
+      const qingAnDone = !!user.qingAnDone;
+      const ketouDone = count >= need;
+
+      document.getElementById('charName').textContent = user.name;
+      document.getElementById('charLevel').textContent = '等级 ' + level;
+
+      document.getElementById('expNum').textContent = level >= 10 ? '已满级' : (prog.current + ' / ' + prog.need);
+      document.getElementById('expFill').style.width = prog.pct + '%';
+      document.getElementById('expLabel').textContent = level >= 10 ? '满级' : ('Lv.' + level + ' 经验');
+
+      document.getElementById('ketouProgress').innerHTML =
+        ketouDone
+          ? '磕头进度：<strong>已完成</strong>'
+          : ('磕头进度：<strong>' + count + '</strong> / ' + need);
+
+      const qingAnSpan = qingAnDone ? '<span class="ok">已完成</span>' : '<span class="no">未完成</span>';
+      const ketouSpan = ketouDone ? '<span class="ok">已完成</span>' : '<span class="no">未完成</span>';
+      document.getElementById('statusTips').innerHTML =
+        '请安：' + qingAnSpan + ' · 磕头：' + ketouSpan + '<br>两项都完成才获得经验';
+
+      const qBtn = document.getElementById('qingAnBtn');
+      if (qingAnDone) {
+        qBtn.textContent = '今日已请安';
+        qBtn.classList.add('done');
+        qBtn.disabled = true;
+      } else {
+        qBtn.textContent = '每日请安';
+        qBtn.classList.remove('done');
+        qBtn.disabled = false;
+      }
+
+      const kBtn = document.getElementById('ketouBtn');
+      if (ketouDone) {
+        kBtn.textContent = '磕头已完成';
+        kBtn.classList.add('done');
+        kBtn.disabled = true;
+      } else {
+        kBtn.textContent = '磕 头';
+        kBtn.classList.remove('done');
+        kBtn.disabled = false;
+      }
+
+      const list = document.getElementById('historyList');
+      const history = user.qingAnHistory || [];
+      if (!history.length) {
+        list.innerHTML = '<div class="history-empty">暂无请安记录</div>';
+      } else {
+        list.innerHTML = history.slice().reverse().map(item =>
+          '<div class="history-item"><div class="h-date">' + item.date + '</div><div class="h-text">' +
+          escapeHtml(item.text) + '</div></div>'
+        ).join('');
+      }
+    }
+
+    document.getElementById('qingAnBtn').addEventListener('click', () => {
+      const user = getUser();
+      if (!user || user.qingAnDone) return;
+      document.getElementById('qingAnBox').classList.toggle('show');
+      document.getElementById('qingAnText').focus();
+    });
+
+    document.getElementById('qingAnSubmit').addEventListener('click', () => {
+      const user = getUser();
+      if (!user || user.qingAnDone) return;
+      const text = document.getElementById('qingAnText').value.trim();
+      if (!text) {
+        showToast('请写下请安内容');
+        return;
+      }
+
+      const today = todayStr();
+      if (!user.qingAnHistory) user.qingAnHistory = [];
+      user.qingAnHistory.push({ date: today, text: text });
+      user.qingAnDone = true;
+      user.lastDate = today;
+
+      const gained = tryGainExp(user);
+      setUser(user);
+      document.getElementById('qingAnBox').classList.remove('show');
+      document.getElementById('qingAnText').value = '';
+      renderDashboard(user);
+
+      if (gained) {
+        const lv = calcLevel(user.exp);
+        showToast('请安完成 · 经验 +1' + (lv > 1 ? ' · Lv.' + lv : ''));
+      } else {
+        showToast('请安完成！继续磕头攒经验');
+      }
+    });
+
+    let animating = false;
+    document.getElementById('ketouBtn').addEventListener('click', () => {
+      if (animating) return;
+      const user = getUser();
+      if (!user) return;
+
+      const level = calcLevel(user.exp || 0);
+      const need = needKowtow(level);
+      if ((user.kowtowCount || 0) >= need) return;
+
+      const sprite = document.getElementById('charSprite');
+      const btn = document.getElementById('ketouBtn');
+
+      animating = true;
+      btn.disabled = true;
+
+      sprite.classList.remove('playing');
+      sprite.style.backgroundPosition = '0 0';
+      void sprite.offsetWidth;
+      sprite.classList.add('playing');
+
+      const onEnd = () => {
+        sprite.classList.remove('playing');
+        sprite.style.backgroundPosition = '-969.42px 0';
+        animating = false;
+
+        user.kowtowCount = (user.kowtowCount || 0) + 1;
+        user.lastDate = todayStr();
+
+        const oldLevel = calcLevel(user.exp || 0);
+        const gained = tryGainExp(user);
+        setUser(user);
+        renderDashboard(user);
+
+        if (gained) {
+          const newLevel = calcLevel(user.exp);
+          if (newLevel > oldLevel) {
+            showToast('经验 +1 · 升级到 Lv.' + newLevel + '！');
+          } else {
+            showToast('经验 +1');
+          }
+        }
+      };
+
+      sprite.addEventListener('animationend', onEnd, { once: true });
+      setTimeout(() => { if (animating) onEnd(); }, 1200);
+    });
+
+    // 下载存档
+    document.getElementById('dashSave').addEventListener('click', async () => {
+      const user = getUser();
+      if (!user) return;
+      const btn = document.getElementById('dashSave');
+      btn.disabled = true;
+      btn.textContent = '生成中...';
+      try {
+        const blob = await buildZip(user);
+        downloadBlob(blob, `贡奴档案_${user.name}.zip`);
+        showToast('存档已下载，请妥善保存');
+      } catch (e) {
+        showToast('下载失败：' + (e.message || '未知错误'));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '下载存档';
+      }
+    });
+
+    document.getElementById('dashBack').addEventListener('click', closeDashboard);
+    document.getElementById('dashLogout').addEventListener('click', () => {
+      clearUser();
+      closeDashboard();
+    });
+
+    updateArchiveBtn();
+  </script>
+</body>
+</html>
