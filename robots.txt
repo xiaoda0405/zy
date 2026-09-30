@@ -1,0 +1,26 @@
+User-agent: *
+Disallow: /
+
+User-agent: Twitterbot
+Disallow: /
+
+User-agent: Twitterbot/1.0
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
